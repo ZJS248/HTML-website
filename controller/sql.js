@@ -11,10 +11,11 @@ connection.connect();
  * @param {Object} obj 被查找的key和value构成的对象
  * @param {String} table 表名
  * @param {Function} callback 查询结果回调
+ * @param {String} item 查询要素,中间,分隔
  * @param {String} condition 自定义语句,加在末尾
  */
-exports.find = (obj, table, callback, condition = '') => {
-    var sql = 'select * from ' + table;
+exports.find = (obj, table, callback, items = '*', condition = '') => {
+    var sql = `select ${items} from ` + table;
     var query = '';
     var keys = Object.keys(obj);//需要查找的对象
     var values = Object.values(obj);//对应对象的值
