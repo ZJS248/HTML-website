@@ -2,6 +2,13 @@ const express = require('express')
 const router = express.Router();
 const sql = require('../controller/sql')
 const d3 = require('d3')
+
+const multer = require('multer')
+const path = require('path')
+const uploader = multer({
+    dest: path.join(path.dirname(__dirname), 'public', 'imgs')
+})
+
 router.get('/getActorList', (req, res) => {
     const items = 'id,name,nickname,editTime,updateTime,hot,visited,addTime,liked,disabled'
     const result = [];
@@ -45,6 +52,11 @@ router.post('/setActorDetails', (req, res) => {
             res.send({ code: 200, msg: 'OK' })
         })
     }
+})//更新||添加actor信息
+router.post('/setHeadImg', uploader.single('headImage'), (req, res) => {
+    console.log(req.body)
+    console.log(req.file)
+    console.log(req.files)
+    res.send('404')
 })
-
 module.exports = router
