@@ -40,7 +40,7 @@ exports.find = (obj, table, callback, items = '*', condition = '') => {
  * @param {Function} callback 结果回调
  */
 exports.add = (obj, table, callback) => {
-    var values = Object.values(obj).join(',');
+    var values = Object.values(obj).map(v => `'${v}'`).join(',');
     var keys = Object.keys(obj).join(',');
     var sql = `Insert into ${table}(${keys}) values(${values});`
     console.log(sql);
