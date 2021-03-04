@@ -1,11 +1,8 @@
 //查询语句
 module.exports = {
-    findVideoPath: (id) => `
-        SELECT video.id, actor.root,video.filename FROM video LEFT JOIN actor on actor.id = video.actorid WHERE actor.id = ${id}
-    `//根据id查询文件路径
-    , getAllMovieList: (actorId) =>
-        `SELECT video.id,idnum,actorId,title,video.editTime, video.updateTime,video.hot,video.watched,video.addTime,video.liked,video.disabled,tags,actor.NAME AS actorName 
-        FROM  video LEFT JOIN actor ON actor.id = actorId ${actorId ? `WHERE actor.id = ${actorId} ` : ''}
-        ORDER BY video.disabled ASC, video.liked DESC, video.editTime DESC`
+    getAllMovieList: (actorId) =>
+        `SELECT jp_movie.id,idnum,actorId,title,jp_movie.editTime, jp_movie.updateTime,jp_movie.hot,jp_movie.watched,jp_movie.addTime,jp_movie.liked,jp_movie.disabled,tags,jp_actor.name AS actorName 
+        FROM  jp_movie LEFT JOIN jp_actor ON jp_actor.id = actorId ${actorId ? `WHERE jp_actor.id = ${actorId} ` : ''}
+        ORDER BY jp_movie.disabled ASC, jp_movie.liked DESC, jp_movie.editTime DESC`
 
 }

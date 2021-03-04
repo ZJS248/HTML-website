@@ -21,14 +21,14 @@ const timeFormat = d3.timeFormat('%H:%M:%S')
 router.get('/getActorList', (req, res) => {
     const items = 'id,name,nickname,editTime,updateTime,hot,visited,addTime,liked,disabled'
     const result = [];
-    sql.find({}, 'actor', (data) => {
+    sql.find({}, 'jp_actor', (data) => {
         res.send(data)
     }, items, ' order by disabled asc,liked desc, editTime desc ')
 })//获取所有actor信息，根据顺序liked,normal,disabled
 
 router.get('/getActorDetails', (req, res) => {
     const id = req.query.id
-    sql.find({ id }, 'actor', (result) => {
+    sql.find({ id }, 'jp_actor', (result) => {
         return res.send(result[0])
     })
 })//获取某位actor详细信息
@@ -37,14 +37,14 @@ router.post('/setActorState', (req, res) => {
     let { id, type, state } = req.body
     state = Number(Boolean(state))
     const now = datetime(new Date())
-    sql.update(id, { [type]: state, editTime: now }, 'actor', () => {
+    sql.update(id, { [type]: state, editTime: now }, 'jp_actor', () => {
         res.send({ code: 200, msg: 'OK' })
     })
 })//更新liked和disabled状态
 
 router.delete('/deleteActor', (req, res) => {
     const id = req.body.id
-    sql.delete({ id }, 'actor', () => {
+    sql.delete({ id }, 'jp_actor', () => {
         res.send({ code: 200, msg: 'OK' })
     })
 })//删除某actor的信息
@@ -59,12 +59,12 @@ router.post('/setActorDetails', uploader.single('headImage'), (req, res) => {
     }
     if (id) {//更新
         req.body.editTime = datetime(new Date())
-        sql.update(id, req.body, 'actor', () => {
+        sql.update(id, req.body, 'jp_actor', () => {
             res.send({ code: 200, msg: 'OK' })
         })
     } else {//添加
         delete req.body.id
-        sql.add(req.body, 'actor', () => {
+        sql.add(req.body, 'jp_actor', () => {
             res.send({ code: 200, msg: 'OK' })
         })
     }
@@ -81,8 +81,35 @@ router.post('/setMovieState', (req, res) => {
     let { id, type, state } = req.body
     state = Number(Boolean(state))
     const now = datetime(new Date())
-    sql.update(id, { [type]: state, editTime: now }, 'video', () => {
+    sql.update(id, { [type]: state, editTime: now }, 'jp_movie', () => {
         res.send({ code: 200, msg: 'OK' })
     })
 })//更新liked和disabled状态
+router.get('/getMovieDetails', (req, res) => {
+    const id = req.query.id
+    sql.find({ id }, 'jp_movie', (result) => {
+        return res.send(result[0])
+    })
+})//获取某Movie详细信息
+
+router.post('/setMovieDetails', uploader.single('coverImg'), (req, res) => {
+    const id = req.body.id
+    if (req.file || req.files) {
+        const file = req.file ? req.file : req.files.coverImg
+        const filename = req.body.name + path.extname(file.originalname)//文件名
+        req.body.coverImg = '/public/imgs/' + filename
+        fs.rename(file.path, path.join(file.destination, filename), (err) => console.log(err))
+    }
+    if (id) {//更新
+        req.body.editTime = datetime(new Date())
+        sql.update(id, req.body, 'jp_movie', () => {
+            res.send({ code: 200, msg: 'OK' })
+        })
+    } else {//添加
+        delete req.body.id
+        sql.add(req.body, 'jp_movie', () => {
+            res.send({ code: 200, msg: 'OK' })
+        })
+    }
+})//更新||添加movie信息
 module.exports = router
