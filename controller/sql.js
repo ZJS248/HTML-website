@@ -26,7 +26,7 @@ exports.find = (obj, table, callback, items = '*', condition = '') => {
         }
     })
     sql += query ? ` where ${query} ` : '';//查询语句
-    sql += condition
+    sql += ' ' + condition
     console.log(sql);
     return connection.query(sql, (err, data) => {
         return err ? Promise.reject(err) : callback(data)//[RowDataPacket{}]
@@ -99,6 +99,7 @@ exports.update = (id, obj, table, callback) => {
 }
 //自定义查询语句
 exports.custom = (sql, callback) => {
+    console.log(sql)
     connection.query(sql, (err, data) => {
         return err ? Promise.reject(err) : callback(data)
     })
