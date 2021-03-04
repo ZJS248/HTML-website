@@ -14,11 +14,11 @@ router.get('/', (_req, res) => {
 
 router.get('/stream/:id', (req, res) => {
     const id = req.params.id
-    sql.custom(query.findVideoPath(id), (data) => {
+    sql.find({ id }, 'video', (data) => {
         if (!data.length) return res.sendStatus(404);
         const { root, filename } = data[0]
         return stream.stream(req, res, root, filename)
-    })
+    }, 'id,root,filename')
 })
 router.get('/getActor', (req, res) => {
     sql.find({}, 'actor', (data) => {
