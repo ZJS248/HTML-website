@@ -3,7 +3,7 @@ var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '123456',
-    database: 'media'
+    database: 'zjs'
 });
 connection.connect();
 /**
@@ -15,6 +15,7 @@ connection.connect();
  * @param {String} condition 自定义语句,加在末尾
  */
 exports.find = (obj, table, callback, items = '*', condition = '') => {
+    if (!items) items = '*'
     var sql = `select ${items} from ` + table;
     var query = '';
     var keys = Object.keys(obj);//需要查找的对象
@@ -49,6 +50,23 @@ exports.add = (obj, table, callback) => {
     })
 }
 /**
+ * 批量多条记录插入
+ * @param {Array} arr 要添加的key和value值组成的对象数组
+ * @param {String} table 表名
+ * @param {Function} callback 结果回调
+ */
+exports.adds = (arr, table, callback) => {
+    let query = [];
+    const keys = Object.keys(arr[0]).join(',')
+    arr.forEach(obj => {
+        query.push(`(${Object.values(obj).map(v => `'${v}'`).join(',')})`)
+    })
+    var sql = `Insert into ${table}(${keys}) values${query.join(',')};`
+    connection.query(sql, (err, data) => {
+        return err ? Promise.reject(err) : callback(data)
+    })
+}
+/**
  * 
  * @param {Object} obj 要删除的key和对应value的值
  * @param {String} table 表名
@@ -77,11 +95,12 @@ exports.delete = (obj, table, callback) => {
 /**
  * 
  * @param {*} id id
- * @param {*} obj 要更新的key和对应value的值
- * @param {*} table 表名
- * @param {*} callback 结果回调
+ * @param {Object} obj 要更新的key和对应value的值
+ * @param {String} table 表名
+ * @param {Function} callback 结果回调
+ * @param {String} condition 自定义语句,加在末尾
  */
-exports.update = (id, obj, table, callback) => {
+exports.update = (id, obj, table, callback, condition) => {
     var values = Object.values(obj);
     var keys = Object.keys(obj);
     var query = ``;
