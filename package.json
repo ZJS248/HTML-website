@@ -28,6 +28,7 @@
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.1",
     "redux": "^4.0.5",
+    "request": "^2.88.2",
     "save-dev": "0.0.1-security",
     "webpack": "^4.44.1"
   }

@@ -8,43 +8,34 @@ router.all('*', (req, res, next) => {
     // res.writeHead(200, { "Content-Type": "application/json;charset=utf-8" })
     next()
 })
-router.get('/', (_req, res) => {
-    res.send('hello world中文')
-})
-
-router.get('/stream/:id', (req, res) => {
+router.get('/mvstream/:id', (req, res) => {
     const id = req.params.id
-    sql.find({ id }, 'video', (data) => {
-        if (!data.length) return res.sendStatus(404);
+    sql.find({ id }, 'jp_movie', (data) => {
         const { root, filename } = data[0]
         return stream.stream(req, res, root, filename)
     }, 'id,root,filename')
 })
-router.get('/getActor', (req, res) => {
-    sql.find({}, 'actor', (data) => {
-        if (!data.length) return res.sendStatus(404);
-        return res.send(JSON.stringify(data))
+router.get('/getActorList', (req, res) => {
+    sql.custom(query.getActorList() + ' order by liked desc, hot desc ', (data) => {
+        res.send({ code: 200, msg: 'OK', data })
     })
 })
 router.get('/getActor/:id', (req, res) => {
     const id = req.params.id
-    sql.find({ id }, 'actor', (data) => {
-        if (!data.length) return res.sendStatus(404);
-        return res.send(JSON.stringify(data[0]))
+    sql.find({ id }, 'jp_actor', (data) => {
+        return res.send({ code: 200, msg: 'OK', data: data[0] })
     })
 })
 router.get('/getVideo', (req, res) => {
     const actorId = req.query.actorId
-    sql.find({ actorId }, 'video', (data) => {
-        if (!data.length) return res.sendStatus(404);
-        return res.send(JSON.stringify(data))
+    sql.custom(query.getAllMovieList(actorId), (data) => {
+        return res.send({ code: 200, msg: 'OK', data })
     })
 })
 router.get('/getVideo/:id', (req, res) => {
     const id = req.params.id
-    sql.find({ id }, 'video', (data) => {
-        if (!data.length) return res.sendStatus(404);
-        return res.send(JSON.stringify(data[0]))
+    sql.find({ id }, 'jp_movie', (data) => {
+        return res.send({ code: 200, msg: 'OK', data: data[0] })
     })
 })
 
