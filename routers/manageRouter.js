@@ -79,6 +79,7 @@ router.post('/setActorDetails', uploader.single('headImage'), (req, res) => {
             }, (err) => {
                 //演员姓名已存在发生冲突
                 if (err.errno === 1062) res.send({ code: 500, msg: '演员姓名已存在' })
+                else if (err.errno === 1366) res.send({ code: 500, msg: '格式不合法' })
                 else console.log(err)
             })
         } else {//添加
@@ -88,6 +89,7 @@ router.post('/setActorDetails', uploader.single('headImage'), (req, res) => {
             }, (err) => {
                 //演员姓名已存在发生冲突
                 if (err.errno === 1062) res.send({ code: 500, msg: '演员姓名已存在' })
+                else if (err.errno === 1366) res.send({ code: 500, msg: '格式不合法' })
                 else console.log(err)
             })
         }
@@ -227,4 +229,10 @@ router.post('/setMovieDetails', uploader.single('coverImg'), (req, res) => {
 
 
 })//更新||添加movie信息
+router.delete('/delMovie', (req, res) => {
+    const id = req.body.id
+    sql.delete({ id }, 'jp_movie', () => {
+        res.send({ code: 304, msg: `删除成功` })
+    })
+})
 module.exports = router

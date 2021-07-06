@@ -15,7 +15,7 @@ app.use(bodyParser.json())
 app.use('/public', express.static('public'))
 app.use('/view', viewRouter);//展示页面接口
 app.use('/manage', managerRouter)//管理系统接口
-app.use('/', (req, res) => res.send('hello world'))
+app.use('/', (req, res) => res.send(req.url))
 app.listen(port, () => {
     console.log(`running on port ${port}...`)
 })

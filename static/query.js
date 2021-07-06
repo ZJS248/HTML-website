@@ -18,6 +18,10 @@ module.exports = {
         jp_movie.addTime,
         jp_movie.tags,
         jp_movie.liked,
+        jp_movie.ad,
+        jp_movie.subtitle,
+        jp_movie.wrong,
+        jp_movie.dinosaur,
         jp_movie.disabled,
         jp_actor.id AS actorId,
         GROUP_CONCAT( jp_actor.NAME SEPARATOR ',' ) actorName,
@@ -30,7 +34,7 @@ module.exports = {
     WHERE
         jp_movie.id IN ( SELECT movieId FROM jp_actor_movie ${actorId ? 'WHERE jp_actor_movie.actorId = ' + actorId : ''} ) 
     GROUP BY
-        jp_movie.id`//多对多查询并将数据合并
+        jp_movie.id `//多对多查询并将数据合并
     , getMovieDetail: (id) =>
         `
         SELECT

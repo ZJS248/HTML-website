@@ -28,7 +28,7 @@ router.get('/getActor/:id', (req, res) => {
 })
 router.get('/getVideo', (req, res) => {
     const actorId = req.query.actorId
-    sql.custom(query.getAllMovieList(actorId), (data) => {
+    sql.custom(query.getAllMovieList(actorId) + ' order by liked desc, jp_movie.hot desc, jp_movie.addTime desc', (data) => {
         return res.send({ code: 200, msg: 'OK', data })
     })
 })
@@ -38,5 +38,24 @@ router.get('/getVideo/:id', (req, res) => {
         return res.send({ code: 200, msg: 'OK', data: data[0] })
     })
 })
-
+router.get('/getActorByMovieId', (req, res) => {
+    const movieId = req.query.movieId
+    sql.custom(`SELECT * FROM jp_actor  where jp_actor.id in(SELECT actorId from jp_actor_movie where movieId = ${movieId} )`, (data) => {
+        return res.send({ code: 200, msg: 'OK', data })
+    })
+})
+router.get('/getEvaluateDetail', (req, res) => {
+    const id = req.query.movieId;
+    sql.find({ id }, 'jp_movie', (data) => {
+        return res.send({ code: 200, msg: 'OK', data: data[0] })
+    }, 'ad,wrong,subtitle,dinosaur')
+})
+router.post('/updateEvaluateDetail', (req, res) => {
+    console.log(req.body)
+    const data = req.body.data;
+    const id = req.body.id
+    sql.update(id, data, 'jp_movie', (data) => {
+        res.send({ code: 200, msg: 'OK', data })
+    })
+})
 module.exports = router;

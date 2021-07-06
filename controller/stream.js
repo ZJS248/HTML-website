@@ -1,13 +1,14 @@
 const path = require('path')
 const fs = require('fs')
 exports.stream = (req, res, root, filename) => {
+    if (!root || !filename) return res.sendStatus(404)
     const file = path.resolve(root, filename)
     fs.stat(file, (err, stats) => {
         if (err) {
-            res.send('404')
+            return res.sendStatus(404)
         }
         const range = req.headers.range;
-        if (!range) {
+        if (!range || !stats) {
             return res.sendStatus(416)
         }
         const position = range.replace(/bytes=/, "").split("-");
@@ -22,8 +23,9 @@ exports.stream = (req, res, root, filename) => {
             "Content-Length": chunksize,
             "Content-Type": "video/mp4"
         })
-
         const stream = fs.createReadStream(file, { start, end })
-        stream.on('open', () => stream.pipe(res)).on('error', (err) => res.end(err))
+        stream.on('open', () => stream.pipe(res)).on('error', (err) =>
+            res.end(err)
+        )
     })
 }

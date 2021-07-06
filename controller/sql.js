@@ -1,11 +1,34 @@
 var mysql = require('mysql');
-var connection = mysql.createConnection({
+require('events').EventEmitter.defaultMaxListeners = 0
+const database = {
     host: 'localhost',
     user: 'root',
     password: '123456',
-    database: 'media'
-});
-connection.connect();
+    database: 'media',
+}
+var connection = mysql.createConnection(database);
+function handleDisconnection() {
+    console.log('开始连接...')
+    connection = mysql.createConnection(database)
+    connection.connect(function (err) {
+        if (err) {
+            console.log(err)
+            return setTimeout(() => handleDisconnection(), 2000);
+        }
+        console.log('连接成功！！！')
+    });
+    connection.on('error', function (err) {
+        console.log('db error', err)
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            console.log('db error执行重连:' + err.message)
+            handleDisconnection();
+        } else {
+            console.log(new Date().toLocaleString())
+            throw err;
+        }
+    });
+}
+handleDisconnection()
 /**
  * 
  * @param {Object} obj 被查找的key和value构成的对象
@@ -29,6 +52,7 @@ exports.find = (obj, table, callback = () => null, items = '*', condition = '', 
     })
     sql += query ? ` where ${query} ` : '';//查询语句
     sql += ' ' + condition
+    console.log(sql)
     return connection.query(sql, (err, data) => {
         return err ? caught(err) : callback(data)//[RowDataPacket{}]
     })
